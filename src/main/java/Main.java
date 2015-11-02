@@ -2,6 +2,9 @@ import java.sql.*;
 import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.Map;
+
+import org.jsoup.nodes.Document;
+
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -30,7 +33,8 @@ public class Main {
 				BergParser parser = new BergParser();
 				String result = "";
 				try {
-					result = parser.parse(parser.getWebpage(parser.url));
+					org.jsoup.Connection.Response resp = parser.getWebpage(parser.url);
+					result = parser.parse(resp.parse(), resp.statusCode());
 					
 				} catch (IOException e) {e.printStackTrace();}
 				finally {
