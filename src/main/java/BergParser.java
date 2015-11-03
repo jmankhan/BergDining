@@ -50,20 +50,28 @@ public class BergParser implements Parser {
 		JSONArray dayItems = new JSONArray();
 
 		Elements breakfast = doc.select("#" + day).select(".brk").select("td");
-		parseMeal(breakfast, dayItems);
-
+		JSONObject b = new JSONObject();
+		b.put("breakfast", parseMeal(breakfast));
+		
 		Elements lunch = doc.select("#" + day).select(".lun").select("td");
-		parseMeal(lunch, dayItems);
+		JSONObject l = new JSONObject();
+		l.put("lunch", parseMeal(lunch));
 
 		Elements dinner = doc.select("#" + day).select(".din").select("td");
-		parseMeal(dinner, dayItems);
+		JSONObject d = new JSONObject();
+		d.put("dinner", parseMeal(dinner));
 
+		dayItems.put(b);
+		dayItems.put(l);
+		dayItems.put(d);
+		
 		JSONObject today = new JSONObject();
 		today.put(day, dayItems);
 		return today;
 	}
 
-	private JSONArray parseMeal(Elements ele, JSONArray day) {
+	private JSONArray parseMeal(Elements ele) {
+		JSONArray meal = new JSONArray();
 		String station = "";
 		for (Element e : ele) {
 			if (e.attr("class").equals("station")) {
@@ -71,14 +79,28 @@ public class BergParser implements Parser {
 				if (!text.isEmpty())
 					station = text;
 			} else if (e.attr("class").equals("menuitem")) {
+				boolean vegetarian = false, vegan = false;
+				
+				Elements imgs = e.select("img");
+				for(Element img : imgs) {
+					if(img.hasAttr("alt")) {
+						if(img.attr("alt").equalsIgnoreCase("Vegetarian"))
+							vegetarian = true;
+						if(img.attr("alt").equalsIgnoreCase("Vegan"))
+							vegan = true;
+					}
+				}
+				
 				JSONObject item = new JSONObject();
 				item.put("station", station);
 				item.put("menuitem", e.text());
-				day.put(item);
+				item.put("vegetarian", vegetarian);
+				item.put("vegan", vegan);
+				meal.put(item);
 			}
 		}
 
-		return day;
+		return meal;
 	}
 
 }
