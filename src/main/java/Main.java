@@ -60,8 +60,8 @@ public class Main {
 
 				Statement stmt = connection.createStatement();
 				
-				stmt.executeUpdate("CREATE TABLE IF NOT EXISTS menu (time TIMESTAMP, json NVARCHAR(MAX))");
-				stmt.executeUpdate("INSERT INTO menu (time, json) VALUES (now(), '{key:value}')");
+				stmt.executeUpdate("CREATE TABLE IF NOT EXISTS menu (time TIMESTAMP, jsonstring JSON)");
+				stmt.executeUpdate("INSERT INTO menu (time, jsonstring) VALUES (now(), '{key:value}')");
 				ResultSet rs = stmt.executeQuery("SELECT * FROM menu");
 
 				ArrayList<String> output = new ArrayList<String>();
