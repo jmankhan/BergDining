@@ -23,7 +23,6 @@ import com.heroku.sdk.jdbc.DatabaseUrl;
 public class Main {
 
 	public static void main(String[] args) {
-
 		port(Integer.valueOf(System.getenv("PORT")));
 		staticFileLocation("/public");
 		
@@ -56,12 +55,13 @@ public class Main {
 			Connection connection = null;
 			Map<String, Object> attributes = new HashMap<>();
 			try {
-				connection = DatabaseUrl.extract().getConnection();
+
+			    connection = DatabaseUrl.extract().getConnection();
 
 				Statement stmt = connection.createStatement();
 				
 				stmt.executeUpdate("CREATE TABLE IF NOT EXISTS menu (time TIMESTAMP, jsonstring JSON)");
-				stmt.executeUpdate("INSERT INTO menu (time, jsonstring) VALUES (now(), '{key:value}')");
+				stmt.executeUpdate("INSERT INTO menu (time, jsonstring) VALUES (now(), '{'key':'value'}')");
 				ResultSet rs = stmt.executeQuery("SELECT * FROM menu");
 
 				ArrayList<String> output = new ArrayList<String>();
