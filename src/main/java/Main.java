@@ -60,14 +60,13 @@ public class Main {
 
 				Statement stmt = connection.createStatement();
 				
-				
-				stmt.executeUpdate("CREATE TABLE IF NOT EXISTS ticks (tick timestamp)");
-				stmt.executeUpdate("INSERT INTO menu (time, json) VALUES (now())");
-				ResultSet rs = stmt.executeQuery("SELECT tick FROM ticks");
+				stmt.executeUpdate("CREATE TABLE IF NOT EXISTS menu (TIMESTAMP, json)");
+				stmt.executeUpdate("INSERT INTO menu (TIMESTAMP, json) VALUES (now(), 'sample')");
+				ResultSet rs = stmt.executeQuery("SELECT * FROM menu");
 
 				ArrayList<String> output = new ArrayList<String>();
 				while (rs.next()) {
-					output.add("Read from DB: " + rs.getTimestamp("tick"));
+					output.add("Read from DB: " + rs.getTimestamp("TIMESTAMP"));
 				}
 
 				attributes.put("results", output);
