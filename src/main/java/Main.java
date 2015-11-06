@@ -26,6 +26,7 @@ public class Main {
 
 		port(Integer.valueOf(System.getenv("PORT")));
 		staticFileLocation("/public");
+		
 
 		get("/berg", new Route() {
 			@SuppressWarnings("finally")
@@ -58,16 +59,16 @@ public class Main {
 				connection = DatabaseUrl.extract().getConnection();
 
 				Statement stmt = connection.createStatement();
+				
+				
 				stmt.executeUpdate("CREATE TABLE IF NOT EXISTS ticks (tick timestamp)");
-				stmt.executeUpdate("INSERT INTO ticks VALUES (now())");
-				stmt.executeUpdate("\\d + ticks");
+				stmt.executeUpdate("INSERT INTO menu (time, json) VALUES (now())");
 				ResultSet rs = stmt.executeQuery("SELECT tick FROM ticks");
 
 				ArrayList<String> output = new ArrayList<String>();
 				while (rs.next()) {
 					output.add("Read from DB: " + rs.getTimestamp("tick"));
 				}
-				output.add("");
 
 				attributes.put("results", output);
 				return new ModelAndView(attributes, "db.ftl");
