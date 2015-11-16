@@ -88,8 +88,16 @@ public class Main {
 			}
 		} , new FreeMarkerEngine());
 
+		get("/xml", new Route() {
+			public Object handle(final Request request, final Response response) {
+				staticFileLocation("/public");
+				return null;
+			}
+		});
+		
 		get("/update", new Route() {
 			public Object handle(final Request request, final Response response) {
+				
 				Connection conn = null;
 				try {
 					//add the most recent menu
