@@ -6,12 +6,14 @@ import java.util.Map;
 import org.json.JSONObject;
 import org.jsoup.nodes.Document;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
 import static spark.Spark.*;
 import spark.template.freemarker.FreeMarkerEngine;
+import spark.utils.IOUtils;
 import spark.ModelAndView;
 import spark.Request;
 import spark.Response;
@@ -90,8 +92,15 @@ public class Main {
 
 		get("/xml", new Route() {
 			public Object handle(final Request request, final Response response) {
-				staticFileLocation("/public");
-				return null;
+				byte[] out = null;
+				try {
+					out = IOUtils.toByteArray(new FileInputStream("main/resources/public/menu.xml"));
+					response.raw().setContentType("text/xml, application/xml");
+					response.raw().getOutputStream().write(out, 0, out.length);
+					System.out.println("testerino");
+				} catch (IOException e) {e.printStackTrace();}
+
+				return "";
 			}
 		});
 		
