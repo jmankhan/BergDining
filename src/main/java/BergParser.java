@@ -1,6 +1,4 @@
-import java.io.File;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
@@ -10,24 +8,22 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.simpleframework.xml.Serializer;
-import org.simpleframework.xml.core.Persister;
 
 import simplexml.MenuDay;
 import simplexml.MenuItem;
 import simplexml.MenuMeal;
 import simplexml.MenuWeek;
 
-public class BergParser implements Parser {
+public class BergParser  {
 	String url;
 
 	public BergParser() {
 		url = "http://dining.muhlenberg.edu/WeeklyMenu.htm";
 	}
 
-	public String start() {
-		System.out.println("starting");
-		String err = "error";
+	public MenuWeek start() {
+		
+		MenuWeek err = null;
 		try {
 			Response r = getWebpage(url);
 			err = parse(r.parse(), r.statusCode());
@@ -37,8 +33,7 @@ public class BergParser implements Parser {
 		}
 	}
 	
-	@Override
-	public String parse(Document doc, int status) {
+	public MenuWeek parse(Document doc, int status) {
 		Elements script = doc.select("script");
 		String nuts = script.get(script.size() - 2).toString();
 
@@ -124,23 +119,9 @@ public class BergParser implements Parser {
 			}
 		}
 
-		Serializer ser = new Persister();
-		
-		File f = null;
-		StringBuffer s = new StringBuffer();
-		try {
-			f = File.createTempFile("menu", ".xml");
-			ser.write(week, f);
-			Scanner a = new Scanner(f);
-			while(a.hasNextLine())
-				s.append(a.nextLine() + "\n");
-		} catch (Exception e) {e.printStackTrace();}
-		
-		
-		return s.toString();
+		return week;
 	}
 
-	@Override
 	public Response getWebpage(String url) throws IOException {
 		Response resp = Jsoup.connect(url)
 				.userAgent(

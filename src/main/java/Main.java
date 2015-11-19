@@ -10,8 +10,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.simpleframework.xml.Serializer;
+import org.simpleframework.xml.core.Persister;
+
 import com.heroku.sdk.jdbc.DatabaseUrl;
 
+import simplexml.MenuWeek;
 import spark.ModelAndView;
 import spark.Request;
 import spark.Response;
@@ -27,9 +31,15 @@ public class Main {
 		get("/berg", new Route() {
 			public Object handle(final Request request, final Response response) {
 				BergParser p = new BergParser();
+				MenuWeek m = p.start();
 				
-				
-				return p.start();
+				Serializer s = new Persister();
+				try {
+					s.write(m, response.raw().getOutputStream());
+				} catch (Exception e) {e.printStackTrace();}
+				finally {
+					return "retrieved latest menu";
+				}
 			}
 		});
 
@@ -93,8 +103,7 @@ public class Main {
 					
 					BergParser parser = new BergParser();
 					org.jsoup.Connection.Response resp = parser.getWebpage(parser.url);
-					String result = parser.parse(resp.parse(), resp.statusCode());
-
+					String result = "";
 					// store the parsed the data into the db
 					stmt.executeUpdate("INSERT INTO menu (time, jsonstring) VALUES (now()," + result + ")");
 				} catch (Exception e) {
