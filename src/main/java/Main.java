@@ -43,12 +43,13 @@ public class Main {
 		
 		get("/d", (req, res) -> {
 			Map<String, Object> attributes = new HashMap<>();
-			attributes.put("message", "Hello World!");
+			attributes.put("results", System.getProperty("user.dir"));
 
 			System.out.println(System.getProperty("user.dir"));
-			return new ModelAndView(attributes, "home.ftl");
+			return new ModelAndView(attributes, "berg.ftl");
 
 		} , new FreeMarkerEngine());
+		
 		get("/db", (req, res) -> {
 			Connection connection = null;
 			Map<String, Object> attributes = new HashMap<>();
