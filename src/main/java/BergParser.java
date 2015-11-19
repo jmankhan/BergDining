@@ -25,12 +25,16 @@ public class BergParser implements Parser {
 		url = "http://dining.muhlenberg.edu/WeeklyMenu.htm";
 	}
 
-	public void start() {
+	public String start() {
 		System.out.println("starting");
+		String err = "error";
 		try {
 			Response r = getWebpage(url);
-			parse(r.parse(), r.statusCode());
+			err = parse(r.parse(), r.statusCode());
 		} catch (IOException e) {e.printStackTrace();}
+		finally {
+			return err;
+		}
 	}
 	
 	@Override
@@ -121,12 +125,19 @@ public class BergParser implements Parser {
 		}
 
 		Serializer ser = new Persister();
+		
+		File f = null;
+		StringBuffer s = new StringBuffer();
 		try {
-			ser.write(week, new File("/public/m.xml"));
-			System.out.println("done serializing");
+			f = File.createTempFile("menu", ".xml");
+			ser.write(week, f);
+			Scanner a = new Scanner(f);
+			while(a.hasNextLine())
+				s.append(a.nextLine() + "\n");
 		} catch (Exception e) {e.printStackTrace();}
 		
-		return "success";
+		
+		return s.toString();
 	}
 
 	@Override

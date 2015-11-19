@@ -27,9 +27,9 @@ public class Main {
 		get("/berg", new Route() {
 			public Object handle(final Request request, final Response response) {
 				BergParser p = new BergParser();
-				p.start();
 				
-				return "retrieved new menu!";
+				
+				return p.start();
 			}
 		});
 
