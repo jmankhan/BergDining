@@ -40,7 +40,15 @@ public class Main {
 			return new ModelAndView(attributes, "home.ftl");
 
 		} , new FreeMarkerEngine());
+		
+		get("/d", (req, res) -> {
+			Map<String, Object> attributes = new HashMap<>();
+			attributes.put("message", "Hello World!");
 
+			System.out.println(System.getProperty("user.dir"));
+			return new ModelAndView(attributes, "home.ftl");
+
+		} , new FreeMarkerEngine());
 		get("/db", (req, res) -> {
 			Connection connection = null;
 			Map<String, Object> attributes = new HashMap<>();
