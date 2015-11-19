@@ -122,7 +122,7 @@ public class BergParser implements Parser {
 
 		Serializer ser = new Persister();
 		try {
-			ser.write(week, new File("/public/menu.xml"));
+			ser.write(week, new File("/public/m.xml"));
 			System.out.println("done serializing");
 		} catch (Exception e) {e.printStackTrace();}
 		
