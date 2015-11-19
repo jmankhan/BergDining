@@ -1,6 +1,5 @@
 import java.io.IOException;
 
-import org.json.JSONObject;
 import org.jsoup.Connection.Response;
 import org.jsoup.nodes.Document;
 

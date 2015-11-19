@@ -1,35 +1,132 @@
+import java.io.File;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Scanner;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.jsoup.Connection.Response;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.simpleframework.xml.Serializer;
+import org.simpleframework.xml.core.Persister;
+
+import simplexml.MenuDay;
+import simplexml.MenuItem;
+import simplexml.MenuMeal;
+import simplexml.MenuWeek;
 
 public class BergParser implements Parser {
 	String url;
-	JSONObject results;
-	final static String[] days = { "sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday" };
 
 	public BergParser() {
 		url = "http://dining.muhlenberg.edu/WeeklyMenu.htm";
 	}
 
+	public void start() {
+		System.out.println("starting");
+		try {
+			Response r = getWebpage(url);
+			parse(r.parse(), r.statusCode());
+		} catch (IOException e) {e.printStackTrace();}
+	}
+	
 	@Override
 	public String parse(Document doc, int status) {
-		JSONObject menu = new JSONObject();
-		menu.put("status", status);
-		
-		JSONArray week = new JSONArray();
-		for(String day : days) {
-			week.put(parseDay(day, doc));
+		Elements script = doc.select("script");
+		String nuts = script.get(script.size() - 2).toString();
+
+		Map<String, MenuItem> items = new HashMap<String, MenuItem>();
+
+		// scan through each nutrition fact dataset
+		// grab the id inside the dataset, compare with the id in the map
+		// input data from the dataset into the BergMenu object
+		Scanner in = new Scanner(nuts);
+		while (in.hasNextLine()) {
+			String line = in.nextLine();
+			if (line.startsWith("aData[")) {
+				String id = line.substring(line.indexOf("[") + 2, line.indexOf("]") - 1);
+				line = line.substring(line.indexOf("(") + 1, line.lastIndexOf(")"));
+				String[] f = line.split(",");
+
+				MenuItem item = new MenuItem();
+				item.facts.serv_size = f[0];
+				item.facts.calories = f[1];
+				item.facts.calfat = f[2];
+				item.facts.fat = f[3];
+				item.facts.fat_pct_dv = f[4];
+				item.facts.satfat = f[5];
+				item.facts.satfat_pct_dv = f[6];
+				item.facts.transfat = f[7];
+				item.facts.chol = f[8];
+				item.facts.chol_pct_dv = f[9];
+				item.facts.sodium = f[10];
+				item.facts.sodium_pct_dv = f[11];
+				item.facts.carbo = f[12];
+				item.facts.carbo_pct_dv = f[13];
+				item.facts.dfib = f[14];
+				item.facts.dfib_pct_dv = f[15];
+				item.facts.sugars = f[16];
+				item.facts.protein = f[17];
+				item.facts.vita_pct_dv = f[18];
+				item.facts.vitc_pct_dv = f[19];
+				item.facts.calcium_pct_dv = f[20];
+				item.facts.iron_pct_dv = f[21];
+				item.facts.item_name = f[22];
+				item.facts.item_desc = f[23];
+				item.facts.allergens = f[24];
+
+				item.facts.id = id;
+				items.put(id, item);
+			}
 		}
+
+		in.close();
+
+		MenuWeek week = new MenuWeek();
+
+		for (MenuDay day : week.days) {
+			Elements d = doc.select("#" + day.name);
+			
+			for (MenuMeal meal : day.meal) {
+				Elements m = d.select("." + meal.name);
+
+				String station = "";
+				for (Element i : m) {
+					Elements parents = i.select("td");
+					
+					for(Element p : parents) {
+						if(p.hasAttr("class") && p.attr("class").equalsIgnoreCase("station")) {
+							if(!p.text().equals("&nbsp;") && !p.text().equals("\u00a0"))
+								station = p.text();
+						}
+					}
+					
+					if (!i.select("span").isEmpty()) {
+						String id = i.select("span").attr("onclick");
+						id = id.substring(id.indexOf("'")+1, id.lastIndexOf("'"));
+						
+						MenuItem item = items.get(id);
+						item.name = i.select("span").text(); 
+						item.facts.station = station;
+						item.facts.meal = meal.name;
+						item.facts.day = day.name;
+						
+						meal.items.add(item);
+					}
+				}
+			}
+		}
+
+		Serializer ser = new Persister();
+		try {
+			ser.write(week, new File("/public/menu.xml"));
+			System.out.println("done serializing");
+		} catch (Exception e) {e.printStackTrace();}
 		
-		menu.put("menu", week);
-		
-		return menu.toString();
+		return "success";
 	}
 
 	@Override
@@ -41,66 +138,4 @@ public class BergParser implements Parser {
 
 		return resp;
 	}
-
-	public JSONObject getResults() {
-		return results;
-	}
-
-	private JSONObject parseDay(String day, Document doc) {
-		JSONArray dayItems = new JSONArray();
-
-		Elements breakfast = doc.select("#" + day).select(".brk").select("td");
-		JSONObject b = new JSONObject();
-		b.put("breakfast", parseMeal(breakfast));
-		
-		Elements lunch = doc.select("#" + day).select(".lun").select("td");
-		JSONObject l = new JSONObject();
-		l.put("lunch", parseMeal(lunch));
-
-		Elements dinner = doc.select("#" + day).select(".din").select("td");
-		JSONObject d = new JSONObject();
-		d.put("dinner", parseMeal(dinner));
-
-		dayItems.put(b);
-		dayItems.put(l);
-		dayItems.put(d);
-		
-		JSONObject today = new JSONObject();
-		today.put(day, dayItems);
-		return today;
-	}
-
-	private JSONArray parseMeal(Elements ele) {
-		JSONArray meal = new JSONArray();
-		String station = "";
-		for (Element e : ele) {
-			if (e.attr("class").equals("station")) {
-				String text = e.text().replace("\u00A0", "").replace("\u0092", "'").trim();
-				if (!text.isEmpty())
-					station = text;
-			} else if (e.attr("class").equals("menuitem")) {
-				boolean vegetarian = false, vegan = false;
-				
-				Elements imgs = e.select("img");
-				for(Element img : imgs) {
-					if(img.hasAttr("alt")) {
-						if(img.attr("alt").equalsIgnoreCase("Vegetarian"))
-							vegetarian = true;
-						if(img.attr("alt").equalsIgnoreCase("Vegan"))
-							vegan = true;
-					}
-				}
-				
-				JSONObject item = new JSONObject();
-				item.put("station", station);
-				item.put("menuitem", e.text());
-				item.put("vegetarian", vegetarian);
-				item.put("vegan", vegan);
-				meal.put(item);
-			}
-		}
-
-		return meal;
-	}
-
 }

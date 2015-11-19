@@ -1,52 +1,35 @@
-import java.sql.*;
-import java.util.HashMap;
+import static spark.Spark.get;
+import static spark.SparkBase.port;
+import static spark.SparkBase.staticFileLocation;
+
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
-import org.json.JSONObject;
-import org.jsoup.nodes.Document;
+import com.heroku.sdk.jdbc.DatabaseUrl;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-
-import static spark.Spark.*;
-import spark.template.freemarker.FreeMarkerEngine;
-import spark.utils.IOUtils;
 import spark.ModelAndView;
 import spark.Request;
 import spark.Response;
 import spark.Route;
-
-import static spark.Spark.get;
-
-import com.heroku.sdk.jdbc.DatabaseUrl;
+import spark.template.freemarker.FreeMarkerEngine;
 
 public class Main {
 
 	public static void main(String[] args) {
 		port(Integer.valueOf(System.getenv("PORT")));
 		staticFileLocation("/public");
-
+		
 		get("/berg", new Route() {
-			@SuppressWarnings("finally")
 			public Object handle(final Request request, final Response response) {
-				Connection connection = null;
-				String result = "";
-				try {
-					connection = DatabaseUrl.extract().getConnection();
-
-					Statement stmt = connection.createStatement();
-					ResultSet rs = stmt.executeQuery("SELECT (time, jsonstring) FROM menu ORDER BY time DESC LIMIT 1");
-					rs.next();
-					result = rs.getString(1);
-				} catch (Exception e) {
-					e.printStackTrace();
-				} finally {
-					return result;
-				}
-
+				BergParser p = new BergParser();
+				p.start();
+				
+				return "retrieved new menu!";
 			}
 		});
 
@@ -90,20 +73,6 @@ public class Main {
 			}
 		} , new FreeMarkerEngine());
 
-		get("/xml", new Route() {
-			public Object handle(final Request request, final Response response) {
-				byte[] out = null;
-				try {
-					out = IOUtils.toByteArray(new FileInputStream("main/resources/public/menu.xml"));
-					response.raw().setContentType("text/xml, application/xml");
-					response.raw().getOutputStream().write(out, 0, out.length);
-					System.out.println("testerino");
-				} catch (IOException e) {e.printStackTrace();}
-
-				return "";
-			}
-		});
-		
 		get("/update", new Route() {
 			public Object handle(final Request request, final Response response) {
 				
