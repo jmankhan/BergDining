@@ -33,6 +33,7 @@ public class Main {
 				BergParser p = new BergParser();
 				MenuWeek m = p.start();
 				
+				response.cookie("date", Long.toString(System.currentTimeMillis()));
 				Serializer s = new Persister();
 				try {
 					s.write(m, response.raw().getOutputStream());
