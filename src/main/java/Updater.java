@@ -11,6 +11,8 @@ import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.convert.AnnotationStrategy;
 import org.simpleframework.xml.core.Persister;
 
+import com.heroku.sdk.jdbc.DatabaseUrl;
+
 import simplexml.MenuWeek;
 
 public class Updater {
@@ -23,11 +25,8 @@ public class Updater {
 		
 		Connection conn = null;
 		try {
-			String url = "jdbc:postgresql://localhost:5432/bergdining";
-			String user = "postgres";
-			String pass = "jalalkhan1";
 			
-			conn = DriverManager.getConnection(url, user, pass);
+			conn = DatabaseUrl.extract().getConnection();
 			
 			//check if table exists. if not, this is the first time,
 			//so we should populate the db
