@@ -49,7 +49,10 @@ public class BergParser  {
 				String id = line.substring(line.indexOf("[") + 2, line.indexOf("]") - 1);
 				line = line.substring(line.indexOf("(") + 1, line.lastIndexOf(")"));
 				String[] f = line.split(",");
-
+				for(int i=0; i<f.length; i++) {
+					f[i] = f[i].substring(1, f[i].length()-1);
+				}
+				
 				MenuItem item = new MenuItem();
 				item.facts.serv_size = f[0];
 				item.facts.calories = f[1];

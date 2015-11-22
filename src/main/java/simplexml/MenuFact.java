@@ -2,8 +2,13 @@ package simplexml;
 
 import org.simpleframework.xml.Attribute;
 
-public class MenuFact {
+import java.io.Serializable;
 
+public class MenuFact implements Serializable {
+
+	public MenuFact() {
+
+	}
 	@Attribute(name = "day")
 	public String day;
 

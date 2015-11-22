@@ -1,12 +1,15 @@
 package simplexml;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.ElementList;
 
-public class MenuDay {
+public class MenuDay implements Serializable {
 
+	public MenuDay() {
+	}
 	public MenuDay(String n) {
 		this.name = n;
 		meal = new ArrayList<MenuMeal>();

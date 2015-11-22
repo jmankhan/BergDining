@@ -1,12 +1,16 @@
 package simplexml;
 
+
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import org.simpleframework.xml.Attribute;
 import org.simpleframework.xml.ElementList;
 
-public class MenuMeal {
+public class MenuMeal implements Serializable{
 
+	public MenuMeal() {
+	}
 	public MenuMeal(String n) {
 		this.name = n;
 		items = new ArrayList<MenuItem>();
@@ -15,6 +19,6 @@ public class MenuMeal {
 	@Attribute
 	public String name;
 	
-	@ElementList
+	@ElementList(type=MenuItem.class)
 	public ArrayList<MenuItem> items;
 }
