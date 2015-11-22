@@ -20,9 +20,6 @@ public class Updater {
 	private final static String TABLENAME = "bergmenu";
 	
 	public static void main(String args[]) {
-		BergParser p = new BergParser();
-		MenuWeek m = p.start();
-		
 		Connection conn = null;
 		try {
 			
