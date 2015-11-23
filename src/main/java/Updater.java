@@ -1,11 +1,13 @@
 import java.io.ByteArrayOutputStream;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.TimeZone;
 
 import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.convert.AnnotationStrategy;
@@ -32,22 +34,17 @@ public class Updater {
 			//if true, table exists
 			if(res.next()) {
 				//check if it is time to update
-				Statement read = conn.createStatement();
-				ResultSet latest = read.executeQuery(
-						  "SELECT datestamp "
-						+ "FROM " + TABLENAME + " "
-						+ "WHERE age(datestamp) >= '7 DAY' "
-						+ "ORDER BY datestamp DESC "
-						+ "LIMIT 1");
+				//counting starts at 1, Sunday = 1
+			    Calendar c = Calendar.getInstance();
+			    c.setTimeZone(TimeZone.getTimeZone("America/New_York"));
+			    c.setTime(new Date());
+			    int day = c.get(Calendar.DAY_OF_WEEK);
+			    if(day == 2) {
+			    	update(conn);
+			    } else {
+			    	//do nothing
+			    }
 
-				//if this set contains anything, we should update the table
-				//otherwise, we don't have to do anything
-				if(latest.next()) {
-					update(conn);
-				} else {
-					//do nothing
-				}
-				
 			} else {
 				create(conn);
 			}
