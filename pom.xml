@@ -5,6 +5,7 @@
 	<groupId>edu.muhlenberg</groupId>
 	<version>1.0-SNAPSHOT</version>
 	<artifactId>berg-dining</artifactId>
+	<packaging>jar</packaging>
 	<dependencies>
 		<dependency>
 			<groupId>com.sparkjava</groupId>
