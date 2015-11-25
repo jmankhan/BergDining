@@ -50,7 +50,7 @@ public class BergParser  {
 				line = line.substring(line.indexOf("(") + 1, line.lastIndexOf(")"));
 				String[] f = line.split(",");
 				for(int i=0; i<f.length; i++) {
-					f[i] = f[i].substring(1, f[i].length()-1);
+					f[i] = f[i].substring(1, f[i].length());
 				}
 				
 				MenuItem item = new MenuItem();
