@@ -1,4 +1,7 @@
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
@@ -81,6 +84,7 @@ public class BergParser  {
 				item.facts.allergens = f[24];
 
 				item.facts.id = id;
+				item.facts.imageID = selectImageID(item);
 				items.put(id, item);
 			}
 		}
@@ -132,5 +136,33 @@ public class BergParser  {
 				.timeout(3000).execute();
 
 		return resp;
+	}
+	
+	public String selectImageID(MenuItem item) {
+		String name = item.name;
+		ArrayList<String> food = readFood();
+		for(String f : food) {
+			if(name.contains(f)) {
+				return f;
+			}
+		}
+		
+		return "none";
+	}
+	
+	public ArrayList<String> readFood() {
+		ArrayList<String> food = new ArrayList<String>();
+		File f = new File("..resources/text/food.txt");
+		if(f.exists()) {
+			try {
+				Scanner in = new Scanner(f);
+				while(in.hasNextLine()) {
+					food.add(in.nextLine());
+				}
+				in.close();
+			} catch (FileNotFoundException e) {e.printStackTrace();}
+		}
+		
+		return food;
 	}
 }
