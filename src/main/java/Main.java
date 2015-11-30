@@ -54,6 +54,21 @@ public class Main {
 				}
 			}
 		});
+		
+		get("/berg/update", new Route() {
+			public Object handle(final Request request, final Response response) {
+				
+				BergParser parser = new BergParser();
+				MenuWeek menu = parser.start();
+				Serializer ser = new Persister();
+				try {
+					ser.write(menu, response.raw().getOutputStream());
+					return "";
+				} catch (Exception e) {e.printStackTrace();}
+				
+				return "error updating";
+			}
+		});
 
 		get("/", (req, res) -> {
 			Map<String, Object> attributes = new HashMap<>();

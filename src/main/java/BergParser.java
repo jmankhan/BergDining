@@ -139,7 +139,10 @@ public class BergParser  {
 	}
 	
 	public String selectImageID(MenuItem item) {
-		String name = item.name;
+		String name = "";
+		if(item.name != null)
+			name = item.name.toLowerCase();
+		
 		ArrayList<String> food = readFood();
 		for(String f : food) {
 			if(name.contains(f)) {
@@ -152,7 +155,8 @@ public class BergParser  {
 	
 	public ArrayList<String> readFood() {
 		ArrayList<String> food = new ArrayList<String>();
-		File f = new File("..resources/text/food.txt");
+		File f = new File("/food.txt");
+		
 		if(f.exists()) {
 			try {
 				Scanner in = new Scanner(f);
@@ -161,6 +165,8 @@ public class BergParser  {
 				}
 				in.close();
 			} catch (FileNotFoundException e) {e.printStackTrace();}
+		} else {
+			System.out.println("File not found");
 		}
 		
 		return food;

@@ -9,6 +9,7 @@ public class MenuFact implements Serializable {
 	public MenuFact() {
 
 	}
+	
 	@Attribute(name = "day")
 	public String day;
 
@@ -96,7 +97,8 @@ public class MenuFact implements Serializable {
 	@Attribute(name = "iron_pct_dv")
 	public String iron_pct_dv;
 
-	@Attribute(name = "imageID")
+	@Attribute(name = "imageID", required = false)
 	public String imageID;
+	
 	public String id;
 }
