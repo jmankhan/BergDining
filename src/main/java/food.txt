@@ -9,6 +9,8 @@ sauce
 ham
 bacon
 risotto
+salad
+pasta
 chicken
 beef
 pork
@@ -18,8 +20,6 @@ sausage
 fish
 cake
 cheese
-salad
-pasta
 bean
 rice
 fruit
@@ -48,7 +48,7 @@ tilapia
 ziti
 apple
 banana
-culiflower
+cauliflower
 tomato
 broil
 carrot

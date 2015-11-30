@@ -2,14 +2,14 @@ import static spark.Spark.get;
 import static spark.SparkBase.port;
 import static spark.SparkBase.staticFileLocation;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Scanner;
 
 import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.convert.AnnotationStrategy;
@@ -57,10 +57,10 @@ public class Main {
 		
 		get("/berg/update", new Route() {
 			public Object handle(final Request request, final Response response) {
-				
 				BergParser parser = new BergParser();
 				MenuWeek menu = parser.start();
 				Serializer ser = new Persister();
+				
 				try {
 					ser.write(menu, response.raw().getOutputStream());
 					return "";
