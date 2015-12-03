@@ -121,6 +121,7 @@ public class BergParser  {
 						item.facts.imageID = selectImageID(item);
 						
 						meal.items.add(item);
+						day.count++;
 					}
 				}
 			}
